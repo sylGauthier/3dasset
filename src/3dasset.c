@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 #include <3dmr/mesh/box.h>
+#include <3dmr/mesh/quad.h>
+#include <3dmr/mesh/icosphere.h>
 #include <3dmr/scene/node.h>
 
 #include <3dasset.h>
@@ -15,6 +17,16 @@ void asset_mat_solid_color(struct MaterialConfig* config,
 
     solid_material_params_init(p);
     material_param_set_vec3_elems(&p->color, r, g, b);
+}
+
+void asset_mat_solid_texid(struct MaterialConfig* config, GLuint tex) {
+    struct SolidMaterialParams* p;
+
+    config->type = MAT_SOLID;
+    p = &config->params.solid;
+
+    solid_material_params_init(p);
+    material_param_set_vec3_texture(&p->color, tex);
 }
 
 void asset_mat_phong_color(struct MaterialConfig* config,
@@ -31,6 +43,18 @@ void asset_mat_phong_color(struct MaterialConfig* config,
     material_param_set_float_constant(&p->shininess, shiny);
 }
 
+void asset_mat_phong_texid(struct MaterialConfig* config,
+                           GLuint tex, float shiny) {
+    struct PhongMaterialParams* p;
+
+    config->type = MAT_PHONG;
+    p = &config->params.phong;
+
+    phong_material_params_init(p);
+    material_param_set_vec3_texture(&p->ambient, tex);
+    material_param_set_float_constant(&p->shininess, shiny);
+}
+
 void asset_mat_pbr_color(struct MaterialConfig* config,
                          float r, float g, float b, float metal, float rough) {
     struct PBRMaterialParams* p;
@@ -40,6 +64,19 @@ void asset_mat_pbr_color(struct MaterialConfig* config,
 
     pbr_material_params_init(p);
     material_param_set_vec3_elems(&p->albedo, r, g, b);
+    material_param_set_float_constant(&p->metalness, metal);
+    material_param_set_float_constant(&p->roughness, rough);
+}
+
+void asset_mat_pbr_texid(struct MaterialConfig* config,
+                         GLuint tex, float metal, float rough) {
+    struct PBRMaterialParams* p;
+
+    config->type = MAT_PBR;
+    p = &config->params.pbr;
+
+    pbr_material_params_init(p);
+    material_param_set_vec3_texture(&p->albedo, tex);
     material_param_set_float_constant(&p->metalness, metal);
     material_param_set_float_constant(&p->roughness, rough);
 }
@@ -100,6 +137,33 @@ struct Node* asset_box(struct MaterialConfig* config,
 
     if (!make_box(&m, w, h, d)) {
         fprintf(stderr, "Error: asset_box: make_box failed\n");
+    } else {
+        n = make_asset(&m, config);
+    }
+    mesh_free(&m);
+    return n;
+}
+
+struct Node* asset_quad(struct MaterialConfig* config, float w, float h) {
+    struct Mesh m;
+    struct Node* n = NULL;
+
+    if (!make_quad(&m, w, h)) {
+        fprintf(stderr, "Error: asset_quad: make_quad failed\n");
+    } else {
+        n = make_asset(&m, config);
+    }
+    mesh_free(&m);
+    return n;
+}
+
+struct Node* asset_icosphere(struct MaterialConfig* config,
+                             float r, unsigned int numSplits) {
+    struct Mesh m;
+    struct Node* n = NULL;
+
+    if (!make_icosphere(&m, r, numSplits)) {
+        fprintf(stderr, "Error: asset_icosphere: make_icosphere failed\n");
     } else {
         n = make_asset(&m, config);
     }
