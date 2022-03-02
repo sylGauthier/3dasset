@@ -9,6 +9,7 @@
 struct MaterialConfig {
     enum MaterialType {
         MAT_SOLID,
+        MAT_SOLID_OVERLAY,
         MAT_PHONG,
         MAT_PBR
     } type;
@@ -23,6 +24,10 @@ struct MaterialConfig {
 void asset_mat_solid_color(struct MaterialConfig* config,
                            float r, float g, float b);
 void asset_mat_solid_texid(struct MaterialConfig* config, GLuint tex);
+
+void asset_mat_overlay_color(struct MaterialConfig* config,
+                             float r, float g, float b);
+void asset_mat_overlay_texid(struct MaterialConfig* config, GLuint tex);
 
 void asset_mat_phong_color(struct MaterialConfig* config,
                            float r, float g, float b, float shiny);

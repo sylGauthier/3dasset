@@ -29,6 +29,27 @@ void asset_mat_solid_texid(struct MaterialConfig* config, GLuint tex) {
     material_param_set_vec3_texture(&p->color, tex);
 }
 
+void asset_mat_overlay_color(struct MaterialConfig* config,
+                             float r, float g, float b) {
+    struct SolidMaterialParams* p;
+
+    config->type = MAT_SOLID_OVERLAY;
+    p = &config->params.solid;
+
+    solid_material_params_init(p);
+    material_param_set_vec3_elems(&p->color, r, g, b);
+}
+
+void asset_mat_overlay_texid(struct MaterialConfig* config, GLuint tex) {
+    struct SolidMaterialParams* p;
+
+    config->type = MAT_SOLID_OVERLAY;
+    p = &config->params.solid;
+
+    solid_material_params_init(p);
+    material_param_set_vec3_texture(&p->color, tex);
+}
+
 void asset_mat_phong_color(struct MaterialConfig* config,
                            float r, float g, float b, float shiny) {
     struct PhongMaterialParams* p;
@@ -89,6 +110,12 @@ static struct Material* make_material(struct MaterialConfig* conf,
         case MAT_SOLID:
             if (!(new = solid_material_new(flags, &conf->params.solid))) {
                 fprintf(stderr, "Error: solid_material_new failed\n");
+            }
+            break;
+        case MAT_SOLID_OVERLAY:
+            if (!(new = solid_overlay_material_new(flags,
+                                                   &conf->params.solid))) {
+                fprintf(stderr, "Error: solid_overlay_material_new failed\n");
             }
             break;
         case MAT_PHONG:
