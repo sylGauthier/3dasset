@@ -23,14 +23,14 @@ $(LIB): $(OBJECTS)
 clean:
 	rm -rf $(LIB) $(OBJECTS) $(TESTS)
 
-install: $(LIB) lib3dasset.pc
+install: $(LIB) 3dasset.pc
 	mkdir -p $(PREFIX)/$(INCLUDEDIR) $(PREFIX)/$(LIBDIR)/pkgconfig $(PREFIX)/bin
 	cp 3dasset.h $(PREFIX)/$(INCLUDEDIR)
 	cp $(LIB) $(PREFIX)/$(LIBDIR)
-	cp lib3dasset.pc $(PREFIX)/$(LIBDIR)/pkgconfig
+	cp 3dasset.pc $(PREFIX)/$(LIBDIR)/pkgconfig
 
-.PHONY: lib3dasset.pc
-lib3dasset.pc:
+.PHONY: 3dasset.pc
+3dasset.pc:
 	printf 'prefix=%s\nincludedir=%s\nlibdir=%s\n\nName: %s\nDescription: %s\nVersion: %s\nCflags: %s\nLibs: %s\nRequires: %s' \
 		'$(PREFIX)' \
 		'$${prefix}/$(INCLUDEDIR)' \
