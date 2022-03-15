@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <3dmr/mesh/box.h>
 #include <3dmr/mesh/quad.h>
 #include <3dmr/mesh/icosphere.h>
 #include <3dmr/scene/node.h>
+#include <3dmr/render/texture.h>
 
 #include <3dasset.h>
 
@@ -48,6 +50,35 @@ void asset_mat_overlay_texid(struct MaterialConfig* config, GLuint tex) {
 
     solid_material_params_init(p);
     material_param_set_vec3_texture(&p->color, tex);
+}
+
+int asset_mat_overlay_texpath(struct MaterialConfig* config, const char* tex) {
+    GLuint texid;
+    const char* ext;
+
+    if (!(ext = strrchr(tex, '.'))) {
+        fprintf(stderr, "Error: asset_mat_overlay_texid: missing extension\n");
+        return 0;
+    }
+    if (!strcmp(ext, ".png")) {
+        if (!(texid = texture_load_from_png(tex))) {
+            fprintf(stderr, "Error: asset_mat_overlay_texpath: "
+                            "texture_load_from_png failed\n");
+            return 0;
+        }
+    } else if (!strcmp(ext, ".jpg") || !strcmp(ext, ".jpeg")) {
+        if (!(texid = texture_load_from_jpeg(tex))) {
+            fprintf(stderr, "Error: asset_mat_overlay_texpath: "
+                            "texture_load_from_jpeg failed\n");
+            return 0;
+        }
+    } else {
+        fprintf(stderr, "Error: asset_mat_overlay_texpath: "
+                        "unkown file extension: %s\n", ext);
+        return 0;
+    }
+    asset_mat_overlay_texid(config, texid);
+    return 1;
 }
 
 void asset_mat_phong_color(struct MaterialConfig* config,
@@ -196,4 +227,15 @@ struct Node* asset_icosphere(struct MaterialConfig* config,
     }
     mesh_free(&m);
     return n;
+}
+
+void asset_free(struct Node* node) {
+    if (!node) return;
+    if (node->type == NODE_GEOMETRY) {
+        struct Geometry* g = node->data.geometry;
+        vertex_array_free(g->vertexArray);
+        free(g->material);
+        free(g);
+    }
+    free(node);
 }

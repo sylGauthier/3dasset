@@ -28,6 +28,7 @@ void asset_mat_solid_texid(struct MaterialConfig* config, GLuint tex);
 void asset_mat_overlay_color(struct MaterialConfig* config,
                              float r, float g, float b);
 void asset_mat_overlay_texid(struct MaterialConfig* config, GLuint tex);
+int asset_mat_overlay_texpath(struct MaterialConfig* config, const char* tex);
 
 void asset_mat_phong_color(struct MaterialConfig* config,
                            float r, float g, float b, float shiny);
@@ -44,5 +45,7 @@ struct Node* asset_box(struct MaterialConfig* config,
 struct Node* asset_quad(struct MaterialConfig* config, float w, float h);
 struct Node* asset_icosphere(struct MaterialConfig* config,
                              float radius, unsigned int numSplits);
+
+void asset_free(struct Node* asset);
 
 #endif
